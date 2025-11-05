@@ -10,10 +10,10 @@ docker compose up
 
 ## Database Backup
 
-To backup the database, run:
+To backup the database, run the dump.sh script:
 
 ```bash
-docker compose exec -T postgres pg_dump -U postgres postgres > ./backups/dumps/db_dump_$(date -d "%Y%m%d%H%M").sql
+bash ./scripts/dump.sh
 ```
 
-This will create a SQL dump file in the `./backups/` directory with the name `db_dump.sql`.
+This will create a SQL dump file in the `./backups/dumps` directory with timestamped name.
