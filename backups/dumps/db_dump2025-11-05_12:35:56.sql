@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict Kt2SASTE8englQIuiTDwtuqPqqVAYwImYDS6tdY6HZQhiBX69DmtPLBd2C4N6UA
+\restrict CN3EkIFr1QJjcRuZnjUQmGSGnIayllQtuT9TsCs4wNHnstl9EwIbhCdmrv0Pjpw
 
 -- Dumped from database version 17.6 (Debian 17.6-2.pgdg13+1)
 -- Dumped by pg_dump version 17.6 (Debian 17.6-2.pgdg13+1)
@@ -58,6 +58,20 @@ CREATE TYPE public.medical_care_status_enum AS ENUM (
 ALTER TYPE public.medical_care_status_enum OWNER TO postgres;
 
 --
+-- Name: user_role_enum; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public.user_role_enum AS ENUM (
+    'admin',
+    'user',
+    'vet',
+    'volunteer'
+);
+
+
+ALTER TYPE public.user_role_enum OWNER TO postgres;
+
+--
 -- Name: vaccination_status_enum; Type: TYPE; Schema: public; Owner: postgres
 --
 
@@ -84,22 +98,6 @@ CREATE TABLE public.base_timestamp (
 
 
 ALTER TABLE public.base_timestamp OWNER TO postgres;
-
---
--- Name: admin; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.admin (
-    id text NOT NULL,
-    name text NOT NULL,
-    email text NOT NULL,
-    phone text,
-    password text NOT NULL
-)
-INHERITS (public.base_timestamp);
-
-
-ALTER TABLE public.admin OWNER TO postgres;
 
 --
 -- Name: adoption_file; Type: TABLE; Schema: public; Owner: postgres
@@ -266,7 +264,8 @@ CREATE TABLE public."user" (
     name text NOT NULL,
     email text NOT NULL,
     phone text,
-    password text NOT NULL
+    password text NOT NULL,
+    role public.user_role_enum NOT NULL
 )
 INHERITS (public.base_timestamp);
 
@@ -312,22 +311,6 @@ COMMENT ON TABLE public.vaccine IS 'Type of vaccine';
 
 
 --
--- Name: vet; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.vet (
-    id text NOT NULL,
-    name text NOT NULL,
-    email text NOT NULL,
-    phone text,
-    password text NOT NULL
-)
-INHERITS (public.base_timestamp);
-
-
-ALTER TABLE public.vet OWNER TO postgres;
-
---
 -- Name: visit; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -355,29 +338,6 @@ COMMENT ON COLUMN public.visit.description IS 'Contains useful informations on t
 --
 
 COMMENT ON COLUMN public.visit.datetime IS 'Datetime at which the visit is planned';
-
-
---
--- Name: volunteer; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.volunteer (
-    id text NOT NULL,
-    name text NOT NULL,
-    email text NOT NULL,
-    phone text,
-    password text NOT NULL
-)
-INHERITS (public.base_timestamp);
-
-
-ALTER TABLE public.volunteer OWNER TO postgres;
-
---
--- Name: admin created_at; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.admin ALTER COLUMN created_at SET DEFAULT now();
 
 
 --
@@ -465,32 +425,10 @@ ALTER TABLE ONLY public.vaccine ALTER COLUMN created_at SET DEFAULT now();
 
 
 --
--- Name: vet created_at; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.vet ALTER COLUMN created_at SET DEFAULT now();
-
-
---
 -- Name: visit created_at; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.visit ALTER COLUMN created_at SET DEFAULT now();
-
-
---
--- Name: volunteer created_at; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.volunteer ALTER COLUMN created_at SET DEFAULT now();
-
-
---
--- Data for Name: admin; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.admin (created_at, id, name, email, phone, password) FROM stdin;
-\.
 
 
 --
@@ -577,7 +515,7 @@ COPY public.medical_file (created_at, id, vaccination_rate, description, animal_
 -- Data for Name: user; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public."user" (created_at, id, name, email, phone, password) FROM stdin;
+COPY public."user" (created_at, id, name, email, phone, password, role) FROM stdin;
 \.
 
 
@@ -598,35 +536,11 @@ COPY public.vaccine (created_at, id, name) FROM stdin;
 
 
 --
--- Data for Name: vet; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.vet (created_at, id, name, email, phone, password) FROM stdin;
-\.
-
-
---
 -- Data for Name: visit; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.visit (created_at, id, description, datetime, visitor_id, adoption_file_id) FROM stdin;
 \.
-
-
---
--- Data for Name: volunteer; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.volunteer (created_at, id, name, email, phone, password) FROM stdin;
-\.
-
-
---
--- Name: admin admin_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.admin
-    ADD CONSTRAINT admin_pkey PRIMARY KEY (id);
 
 
 --
@@ -726,55 +640,11 @@ ALTER TABLE ONLY public.vaccine
 
 
 --
--- Name: vet vet_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.vet
-    ADD CONSTRAINT vet_pkey PRIMARY KEY (id);
-
-
---
 -- Name: visit visit_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.visit
     ADD CONSTRAINT visit_pkey PRIMARY KEY (id);
-
-
---
--- Name: volunteer volunteer_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.volunteer
-    ADD CONSTRAINT volunteer_pkey PRIMARY KEY (id);
-
-
---
--- Name: admin_email_idx; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE UNIQUE INDEX admin_email_idx ON public.admin USING btree (email);
-
-
---
--- Name: admin_name_idx; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE UNIQUE INDEX admin_name_idx ON public.admin USING btree (name);
-
-
---
--- Name: admin_password_idx; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE UNIQUE INDEX admin_password_idx ON public.admin USING btree (password);
-
-
---
--- Name: admin_phone_idx; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE UNIQUE INDEX admin_phone_idx ON public.admin USING btree (phone);
 
 
 --
@@ -848,62 +718,6 @@ CREATE UNIQUE INDEX user_phone_idx ON public."user" USING btree (phone);
 
 
 --
--- Name: vet_email_idx; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE UNIQUE INDEX vet_email_idx ON public.vet USING btree (email);
-
-
---
--- Name: vet_name_idx; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE UNIQUE INDEX vet_name_idx ON public.vet USING btree (name);
-
-
---
--- Name: vet_password_idx; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE UNIQUE INDEX vet_password_idx ON public.vet USING btree (password);
-
-
---
--- Name: vet_phone_idx; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE UNIQUE INDEX vet_phone_idx ON public.vet USING btree (phone);
-
-
---
--- Name: volunteer_email_idx; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE UNIQUE INDEX volunteer_email_idx ON public.volunteer USING btree (email);
-
-
---
--- Name: volunteer_name_idx; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE UNIQUE INDEX volunteer_name_idx ON public.volunteer USING btree (name);
-
-
---
--- Name: volunteer_password_idx; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE UNIQUE INDEX volunteer_password_idx ON public.volunteer USING btree (password);
-
-
---
--- Name: volunteer_phone_idx; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE UNIQUE INDEX volunteer_phone_idx ON public.volunteer USING btree (phone);
-
-
---
 -- Name: adoption_file adoption_file_animal_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -968,11 +782,11 @@ ALTER TABLE ONLY public.medical_care
 
 
 --
--- Name: medical_care medical_care_vet_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: medical_care medical_care_user_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.medical_care
-    ADD CONSTRAINT medical_care_vet_id_fkey FOREIGN KEY (vet_id) REFERENCES public.vet(id);
+    ADD CONSTRAINT medical_care_user_fk FOREIGN KEY (vet_id) REFERENCES public."user"(id);
 
 
 --
@@ -992,19 +806,19 @@ ALTER TABLE ONLY public.vaccination
 
 
 --
+-- Name: vaccination vaccination_user_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.vaccination
+    ADD CONSTRAINT vaccination_user_fk FOREIGN KEY (vet_id) REFERENCES public."user"(id);
+
+
+--
 -- Name: vaccination vaccination_vaccine_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.vaccination
     ADD CONSTRAINT vaccination_vaccine_fk FOREIGN KEY (vaccine_id) REFERENCES public.vaccine(id);
-
-
---
--- Name: vaccination vaccination_vet_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.vaccination
-    ADD CONSTRAINT vaccination_vet_id_fkey FOREIGN KEY (vet_id) REFERENCES public.vet(id);
 
 
 --
@@ -1027,5 +841,5 @@ ALTER TABLE ONLY public.visit
 -- PostgreSQL database dump complete
 --
 
-\unrestrict Kt2SASTE8englQIuiTDwtuqPqqVAYwImYDS6tdY6HZQhiBX69DmtPLBd2C4N6UA
+\unrestrict CN3EkIFr1QJjcRuZnjUQmGSGnIayllQtuT9TsCs4wNHnstl9EwIbhCdmrv0Pjpw
 
