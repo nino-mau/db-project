@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict y6J13b2kx9IPdPOVOojQ6qZ0GZJEAYwHgV304YTQXfykbdWQU4xhJZNyD8zT4zT
+\restrict Kt2SASTE8englQIuiTDwtuqPqqVAYwImYDS6tdY6HZQhiBX69DmtPLBd2C4N6UA
 
 -- Dumped from database version 17.6 (Debian 17.6-2.pgdg13+1)
 -- Dumped by pg_dump version 17.6 (Debian 17.6-2.pgdg13+1)
@@ -82,6 +82,9 @@ CREATE TABLE public.base_timestamp (
     created_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
+
+ALTER TABLE public.base_timestamp OWNER TO postgres;
+
 --
 -- Name: admin; Type: TABLE; Schema: public; Owner: postgres
 --
@@ -92,7 +95,8 @@ CREATE TABLE public.admin (
     email text NOT NULL,
     phone text,
     password text NOT NULL
-) INHERITS (public.base_timestamp);
+)
+INHERITS (public.base_timestamp);
 
 
 ALTER TABLE public.admin OWNER TO postgres;
@@ -106,7 +110,8 @@ CREATE TABLE public.adoption_file (
     vaccination_rate integer NOT NULL,
     description text,
     animal_id text NOT NULL
-) INHERITS (public.base_timestamp);
+)
+INHERITS (public.base_timestamp);
 
 
 ALTER TABLE public.adoption_file OWNER TO postgres;
@@ -124,7 +129,8 @@ CREATE TABLE public.adoption_request (
     pickup_datetime timestamp without time zone,
     requester_id text NOT NULL,
     adoption_file_id text NOT NULL
-) INHERITS (public.base_timestamp);
+)
+INHERITS (public.base_timestamp);
 
 
 ALTER TABLE public.adoption_request OWNER TO postgres;
@@ -142,7 +148,8 @@ CREATE TABLE public.animal (
     specie_id text NOT NULL,
     race text NOT NULL,
     description text
-) INHERITS (public.base_timestamp);
+)
+INHERITS (public.base_timestamp);
 
 
 ALTER TABLE public.animal OWNER TO postgres;
@@ -155,7 +162,8 @@ CREATE TABLE public.animal_race (
     id text NOT NULL,
     name text NOT NULL,
     specie_id text NOT NULL
-) INHERITS (public.base_timestamp);
+)
+INHERITS (public.base_timestamp);
 
 
 ALTER TABLE public.animal_race OWNER TO postgres;
@@ -167,14 +175,11 @@ ALTER TABLE public.animal_race OWNER TO postgres;
 CREATE TABLE public.animal_specie (
     id text NOT NULL,
     name text NOT NULL
-) INHERITS (public.base_timestamp);
+)
+INHERITS (public.base_timestamp);
 
 
 ALTER TABLE public.animal_specie OWNER TO postgres;
-
-
-
-ALTER TABLE public.base_timestamp OWNER TO postgres;
 
 --
 -- Name: donation; Type: TABLE; Schema: public; Owner: postgres
@@ -185,7 +190,8 @@ CREATE TABLE public.donation (
     amount integer NOT NULL,
     means text,
     donator_id text NOT NULL
-) INHERITS (public.base_timestamp);
+)
+INHERITS (public.base_timestamp);
 
 
 ALTER TABLE public.donation OWNER TO postgres;
@@ -202,7 +208,8 @@ CREATE TABLE public.medical_care (
     datetime timestamp without time zone,
     vet_id text NOT NULL,
     medical_file_id text NOT NULL
-) INHERITS (public.base_timestamp);
+)
+INHERITS (public.base_timestamp);
 
 
 ALTER TABLE public.medical_care OWNER TO postgres;
@@ -215,7 +222,8 @@ CREATE TABLE public.medical_care_type (
     id text NOT NULL,
     name text NOT NULL,
     description text
-) INHERITS (public.base_timestamp);
+)
+INHERITS (public.base_timestamp);
 
 
 ALTER TABLE public.medical_care_type OWNER TO postgres;
@@ -243,7 +251,8 @@ CREATE TABLE public.medical_file (
     vaccination_rate integer NOT NULL,
     description text,
     animal_id text NOT NULL
-) INHERITS (public.base_timestamp);
+)
+INHERITS (public.base_timestamp);
 
 
 ALTER TABLE public.medical_file OWNER TO postgres;
@@ -258,7 +267,8 @@ CREATE TABLE public."user" (
     email text NOT NULL,
     phone text,
     password text NOT NULL
-) INHERITS (public.base_timestamp);
+)
+INHERITS (public.base_timestamp);
 
 
 ALTER TABLE public."user" OWNER TO postgres;
@@ -275,7 +285,8 @@ CREATE TABLE public.vaccination (
     datetime timestamp without time zone,
     vet_id text NOT NULL,
     medical_file_id text NOT NULL
-) INHERITS (public.base_timestamp);
+)
+INHERITS (public.base_timestamp);
 
 
 ALTER TABLE public.vaccination OWNER TO postgres;
@@ -287,7 +298,8 @@ ALTER TABLE public.vaccination OWNER TO postgres;
 CREATE TABLE public.vaccine (
     id text NOT NULL,
     name text NOT NULL
-) INHERITS (public.base_timestamp);
+)
+INHERITS (public.base_timestamp);
 
 
 ALTER TABLE public.vaccine OWNER TO postgres;
@@ -309,7 +321,8 @@ CREATE TABLE public.vet (
     email text NOT NULL,
     phone text,
     password text NOT NULL
-) INHERITS (public.base_timestamp);
+)
+INHERITS (public.base_timestamp);
 
 
 ALTER TABLE public.vet OWNER TO postgres;
@@ -324,7 +337,8 @@ CREATE TABLE public.visit (
     datetime timestamp without time zone,
     visitor_id text NOT NULL,
     adoption_file_id text NOT NULL
-) INHERITS (public.base_timestamp);
+)
+INHERITS (public.base_timestamp);
 
 
 ALTER TABLE public.visit OWNER TO postgres;
@@ -353,16 +367,129 @@ CREATE TABLE public.volunteer (
     email text NOT NULL,
     phone text,
     password text NOT NULL
-) INHERITS (public.base_timestamp);
+)
+INHERITS (public.base_timestamp);
 
 
 ALTER TABLE public.volunteer OWNER TO postgres;
 
 --
+-- Name: admin created_at; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.admin ALTER COLUMN created_at SET DEFAULT now();
+
+
+--
+-- Name: adoption_file created_at; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.adoption_file ALTER COLUMN created_at SET DEFAULT now();
+
+
+--
+-- Name: adoption_request created_at; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.adoption_request ALTER COLUMN created_at SET DEFAULT now();
+
+
+--
+-- Name: animal created_at; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.animal ALTER COLUMN created_at SET DEFAULT now();
+
+
+--
+-- Name: animal_race created_at; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.animal_race ALTER COLUMN created_at SET DEFAULT now();
+
+
+--
+-- Name: animal_specie created_at; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.animal_specie ALTER COLUMN created_at SET DEFAULT now();
+
+
+--
+-- Name: donation created_at; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.donation ALTER COLUMN created_at SET DEFAULT now();
+
+
+--
+-- Name: medical_care created_at; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.medical_care ALTER COLUMN created_at SET DEFAULT now();
+
+
+--
+-- Name: medical_care_type created_at; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.medical_care_type ALTER COLUMN created_at SET DEFAULT now();
+
+
+--
+-- Name: medical_file created_at; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.medical_file ALTER COLUMN created_at SET DEFAULT now();
+
+
+--
+-- Name: user created_at; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."user" ALTER COLUMN created_at SET DEFAULT now();
+
+
+--
+-- Name: vaccination created_at; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.vaccination ALTER COLUMN created_at SET DEFAULT now();
+
+
+--
+-- Name: vaccine created_at; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.vaccine ALTER COLUMN created_at SET DEFAULT now();
+
+
+--
+-- Name: vet created_at; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.vet ALTER COLUMN created_at SET DEFAULT now();
+
+
+--
+-- Name: visit created_at; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.visit ALTER COLUMN created_at SET DEFAULT now();
+
+
+--
+-- Name: volunteer created_at; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.volunteer ALTER COLUMN created_at SET DEFAULT now();
+
+
+--
 -- Data for Name: admin; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.admin (id, name, email, phone, password) FROM stdin;
+COPY public.admin (created_at, id, name, email, phone, password) FROM stdin;
 \.
 
 
@@ -370,7 +497,7 @@ COPY public.admin (id, name, email, phone, password) FROM stdin;
 -- Data for Name: adoption_file; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.adoption_file (id, vaccination_rate, description, animal_id) FROM stdin;
+COPY public.adoption_file (created_at, id, vaccination_rate, description, animal_id) FROM stdin;
 \.
 
 
@@ -378,7 +505,7 @@ COPY public.adoption_file (id, vaccination_rate, description, animal_id) FROM st
 -- Data for Name: adoption_request; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.adoption_request (id, status, description, requester_note, refusal_note, pickup_datetime, requester_id, adoption_file_id) FROM stdin;
+COPY public.adoption_request (created_at, id, status, description, requester_note, refusal_note, pickup_datetime, requester_id, adoption_file_id) FROM stdin;
 \.
 
 
@@ -386,7 +513,7 @@ COPY public.adoption_request (id, status, description, requester_note, refusal_n
 -- Data for Name: animal; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.animal (id, name, age, sex, picture_url, specie_id, race, description) FROM stdin;
+COPY public.animal (created_at, id, name, age, sex, picture_url, specie_id, race, description) FROM stdin;
 \.
 
 
@@ -394,7 +521,7 @@ COPY public.animal (id, name, age, sex, picture_url, specie_id, race, descriptio
 -- Data for Name: animal_race; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.animal_race (id, name, specie_id) FROM stdin;
+COPY public.animal_race (created_at, id, name, specie_id) FROM stdin;
 \.
 
 
@@ -402,7 +529,7 @@ COPY public.animal_race (id, name, specie_id) FROM stdin;
 -- Data for Name: animal_specie; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.animal_specie (id, name) FROM stdin;
+COPY public.animal_specie (created_at, id, name) FROM stdin;
 \.
 
 
@@ -418,7 +545,7 @@ COPY public.base_timestamp (created_at) FROM stdin;
 -- Data for Name: donation; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.donation (id, amount, means, donator_id) FROM stdin;
+COPY public.donation (created_at, id, amount, means, donator_id) FROM stdin;
 \.
 
 
@@ -426,7 +553,7 @@ COPY public.donation (id, amount, means, donator_id) FROM stdin;
 -- Data for Name: medical_care; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.medical_care (id, type_id, status, description, datetime, vet_id, medical_file_id) FROM stdin;
+COPY public.medical_care (created_at, id, type_id, status, description, datetime, vet_id, medical_file_id) FROM stdin;
 \.
 
 
@@ -434,7 +561,7 @@ COPY public.medical_care (id, type_id, status, description, datetime, vet_id, me
 -- Data for Name: medical_care_type; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.medical_care_type (id, name, description) FROM stdin;
+COPY public.medical_care_type (created_at, id, name, description) FROM stdin;
 \.
 
 
@@ -442,7 +569,7 @@ COPY public.medical_care_type (id, name, description) FROM stdin;
 -- Data for Name: medical_file; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.medical_file (id, vaccination_rate, description, animal_id) FROM stdin;
+COPY public.medical_file (created_at, id, vaccination_rate, description, animal_id) FROM stdin;
 \.
 
 
@@ -450,7 +577,7 @@ COPY public.medical_file (id, vaccination_rate, description, animal_id) FROM std
 -- Data for Name: user; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public."user" (id, name, email, phone, password) FROM stdin;
+COPY public."user" (created_at, id, name, email, phone, password) FROM stdin;
 \.
 
 
@@ -458,7 +585,7 @@ COPY public."user" (id, name, email, phone, password) FROM stdin;
 -- Data for Name: vaccination; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.vaccination (id, vaccine_id, status, description, datetime, vet_id, medical_file_id) FROM stdin;
+COPY public.vaccination (created_at, id, vaccine_id, status, description, datetime, vet_id, medical_file_id) FROM stdin;
 \.
 
 
@@ -466,7 +593,7 @@ COPY public.vaccination (id, vaccine_id, status, description, datetime, vet_id, 
 -- Data for Name: vaccine; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.vaccine (id, name) FROM stdin;
+COPY public.vaccine (created_at, id, name) FROM stdin;
 \.
 
 
@@ -474,7 +601,7 @@ COPY public.vaccine (id, name) FROM stdin;
 -- Data for Name: vet; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.vet (id, name, email, phone, password) FROM stdin;
+COPY public.vet (created_at, id, name, email, phone, password) FROM stdin;
 \.
 
 
@@ -482,7 +609,7 @@ COPY public.vet (id, name, email, phone, password) FROM stdin;
 -- Data for Name: visit; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.visit (id, description, datetime, visitor_id, adoption_file_id) FROM stdin;
+COPY public.visit (created_at, id, description, datetime, visitor_id, adoption_file_id) FROM stdin;
 \.
 
 
@@ -490,7 +617,7 @@ COPY public.visit (id, description, datetime, visitor_id, adoption_file_id) FROM
 -- Data for Name: volunteer; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.volunteer (id, name, email, phone, password) FROM stdin;
+COPY public.volunteer (created_at, id, name, email, phone, password) FROM stdin;
 \.
 
 
@@ -900,6 +1027,5 @@ ALTER TABLE ONLY public.visit
 -- PostgreSQL database dump complete
 --
 
-\unrestrict y6J13b2kx9IPdPOVOojQ6qZ0GZJEAYwHgV304YTQXfykbdWQU4xhJZNyD8zT4zT
-
+\unrestrict Kt2SASTE8englQIuiTDwtuqPqqVAYwImYDS6tdY6HZQhiBX69DmtPLBd2C4N6UA
 
