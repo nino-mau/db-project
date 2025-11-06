@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict AwcLrdfgnmqOjWkEfzRGdeuTdZ6AL2OYyXNR2kpPzwETDrhQcKWmTAgmrThmLuh
+\restrict gjW31eTmlbKqsmClvFha42q8OFGG3NbR1OLIAKpcDmfs4ORnuvS0IvinSIowA78
 
 -- Dumped from database version 17.6 (Debian 17.6-2.pgdg13+1)
 -- Dumped by pg_dump version 17.6 (Debian 17.6-2.pgdg13+1)
@@ -194,7 +194,7 @@ ALTER TABLE public.adoption_file OWNER TO postgres;
 --
 
 CREATE TABLE public.adoption_followup (
-    id text NOT NULL,
+    id text DEFAULT public.uuid_generate_v4() NOT NULL,
     adoption_file_id text NOT NULL,
     animal_status public.adopted_animal_status_enum NOT NULL,
     note text,
@@ -212,7 +212,7 @@ ALTER TABLE public.adoption_followup OWNER TO postgres;
 --
 
 CREATE TABLE public.adoption_request (
-    id text NOT NULL,
+    id text DEFAULT public.uuid_generate_v4() NOT NULL,
     status public.adoption_request_status_enum NOT NULL,
     description text,
     requester_note text,
@@ -238,7 +238,7 @@ CREATE TABLE public.animal (
     age integer NOT NULL,
     sex public.animal_sex_enum NOT NULL,
     picture_url text,
-    specie_id text NOT NULL,
+    type_id text NOT NULL,
     race_id text NOT NULL,
     description text,
     is_deleted boolean DEFAULT false NOT NULL,
@@ -254,7 +254,7 @@ ALTER TABLE public.animal OWNER TO postgres;
 --
 
 CREATE TABLE public.animal_injury (
-    id text NOT NULL,
+    id text DEFAULT public.uuid_generate_v4() NOT NULL,
     medical_file_id text NOT NULL,
     status public.injury_status_enum NOT NULL,
     severity public.injury_severity_enum NOT NULL,
@@ -273,9 +273,9 @@ ALTER TABLE public.animal_injury OWNER TO postgres;
 --
 
 CREATE TABLE public.animal_race (
-    id text NOT NULL,
+    id text DEFAULT public.uuid_generate_v4() NOT NULL,
     name text NOT NULL,
-    specie_id text NOT NULL,
+    type_id text NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
@@ -283,25 +283,57 @@ CREATE TABLE public.animal_race (
 ALTER TABLE public.animal_race OWNER TO postgres;
 
 --
--- Name: animal_specie; Type: TABLE; Schema: public; Owner: postgres
+-- Name: animal_treatment; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.animal_specie (
+CREATE TABLE public.animal_treatment (
     id text DEFAULT public.uuid_generate_v4() NOT NULL,
-    name text NOT NULL,
+    medical_file_id text NOT NULL,
+    for_injury_id text,
+    start_date timestamp without time zone,
+    end_date timestamp without time zone,
+    note text,
+    is_deleted boolean DEFAULT false NOT NULL,
+    deleted_at timestamp without time zone,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 
-ALTER TABLE public.animal_specie OWNER TO postgres;
+ALTER TABLE public.animal_treatment OWNER TO postgres;
+
+--
+-- Name: animal_treatment_medicine; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.animal_treatment_medicine (
+    animal_treatment_id text NOT NULL,
+    medicine_type_id text NOT NULL
+);
+
+
+ALTER TABLE public.animal_treatment_medicine OWNER TO postgres;
+
+--
+-- Name: animal_type; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.animal_type (
+    id text DEFAULT public.uuid_generate_v4() NOT NULL,
+    name text NOT NULL,
+    specie text NOT NULL,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+
+ALTER TABLE public.animal_type OWNER TO postgres;
 
 --
 -- Name: behavior_file; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.behavior_file (
-    id text NOT NULL,
-    animal_id character varying NOT NULL,
+    id text DEFAULT public.uuid_generate_v4() NOT NULL,
+    animal_id text NOT NULL,
     behavior_type_id text NOT NULL,
     note text,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
@@ -317,7 +349,7 @@ ALTER TABLE public.behavior_file OWNER TO postgres;
 --
 
 CREATE TABLE public.behavior_type (
-    id text NOT NULL,
+    id text DEFAULT public.uuid_generate_v4() NOT NULL,
     name text NOT NULL,
     description text NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
@@ -331,7 +363,7 @@ ALTER TABLE public.behavior_type OWNER TO postgres;
 --
 
 CREATE TABLE public.campaign (
-    id text NOT NULL,
+    id text DEFAULT public.uuid_generate_v4() NOT NULL,
     title text NOT NULL,
     description text NOT NULL,
     goal_amount numeric NOT NULL,
@@ -351,7 +383,7 @@ ALTER TABLE public.campaign OWNER TO postgres;
 --
 
 CREATE TABLE public.donation (
-    id text NOT NULL,
+    id text DEFAULT public.uuid_generate_v4() NOT NULL,
     amount numeric NOT NULL,
     means text,
     donator_id text NOT NULL,
@@ -370,7 +402,7 @@ ALTER TABLE public.donation OWNER TO postgres;
 --
 
 CREATE TABLE public.injury_type (
-    id text NOT NULL,
+    id text DEFAULT public.uuid_generate_v4() NOT NULL,
     name text NOT NULL,
     description text NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
@@ -384,7 +416,7 @@ ALTER TABLE public.injury_type OWNER TO postgres;
 --
 
 CREATE TABLE public.medical_care (
-    id text NOT NULL,
+    id text DEFAULT public.uuid_generate_v4() NOT NULL,
     type_id text NOT NULL,
     status public.medical_care_status_enum NOT NULL,
     description text,
@@ -404,7 +436,7 @@ ALTER TABLE public.medical_care OWNER TO postgres;
 --
 
 CREATE TABLE public.medical_care_type (
-    id text NOT NULL,
+    id text DEFAULT public.uuid_generate_v4() NOT NULL,
     name text NOT NULL,
     description text,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
@@ -432,7 +464,7 @@ COMMENT ON COLUMN public.medical_care_type.description IS 'Description of the me
 --
 
 CREATE TABLE public.medical_file (
-    id text NOT NULL,
+    id text DEFAULT public.uuid_generate_v4() NOT NULL,
     vaccination_rate integer NOT NULL,
     description text,
     animal_id text NOT NULL,
@@ -446,11 +478,25 @@ CREATE TABLE public.medical_file (
 ALTER TABLE public.medical_file OWNER TO postgres;
 
 --
+-- Name: medicine_type; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.medicine_type (
+    id text DEFAULT public.uuid_generate_v4() NOT NULL,
+    name text NOT NULL,
+    description text,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+
+ALTER TABLE public.medicine_type OWNER TO postgres;
+
+--
 -- Name: user; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public."user" (
-    id text NOT NULL,
+    id text DEFAULT public.uuid_generate_v4() NOT NULL,
     name text NOT NULL,
     email text NOT NULL,
     phone text,
@@ -469,7 +515,7 @@ ALTER TABLE public."user" OWNER TO postgres;
 --
 
 CREATE TABLE public.vaccination (
-    id text NOT NULL,
+    id text DEFAULT public.uuid_generate_v4() NOT NULL,
     vaccine_id text NOT NULL,
     status public.vaccination_status_enum NOT NULL,
     description text,
@@ -489,7 +535,7 @@ ALTER TABLE public.vaccination OWNER TO postgres;
 --
 
 CREATE TABLE public.vaccine_type (
-    id text NOT NULL,
+    id text DEFAULT public.uuid_generate_v4() NOT NULL,
     name text NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
@@ -509,7 +555,7 @@ COMMENT ON TABLE public.vaccine_type IS 'Type of vaccine';
 --
 
 CREATE TABLE public.visit (
-    id text NOT NULL,
+    id text DEFAULT public.uuid_generate_v4() NOT NULL,
     description text,
     datetime timestamp without time zone,
     visitor_id text NOT NULL,
@@ -564,7 +610,7 @@ COPY public.adoption_request (id, status, description, requester_note, refusal_n
 -- Data for Name: animal; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.animal (id, name, age, sex, picture_url, specie_id, race_id, description, is_deleted, created_at, deleted_at) FROM stdin;
+COPY public.animal (id, name, age, sex, picture_url, type_id, race_id, description, is_deleted, created_at, deleted_at) FROM stdin;
 \.
 
 
@@ -580,16 +626,31 @@ COPY public.animal_injury (id, medical_file_id, status, severity, note, type_id,
 -- Data for Name: animal_race; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.animal_race (id, name, specie_id, created_at) FROM stdin;
+COPY public.animal_race (id, name, type_id, created_at) FROM stdin;
 \.
 
 
 --
--- Data for Name: animal_specie; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: animal_treatment; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.animal_specie (id, name, created_at) FROM stdin;
-b5f1f372-073f-42ff-80a4-2e836497da2b	cat	2025-11-06 10:05:43.466988
+COPY public.animal_treatment (id, medical_file_id, for_injury_id, start_date, end_date, note, is_deleted, deleted_at, created_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: animal_treatment_medicine; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.animal_treatment_medicine (animal_treatment_id, medicine_type_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: animal_type; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.animal_type (id, name, created_at) FROM stdin;
 \.
 
 
@@ -654,6 +715,14 @@ COPY public.medical_care_type (id, name, description, created_at) FROM stdin;
 --
 
 COPY public.medical_file (id, vaccination_rate, description, animal_id, is_deleted, health_status, created_at, deleted_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: medicine_type; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.medicine_type (id, name, description, created_at) FROM stdin;
 \.
 
 
@@ -738,11 +807,27 @@ ALTER TABLE ONLY public.animal_race
 
 
 --
--- Name: animal_specie animal_specie_pk; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: animal_type animal_type_pk; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.animal_specie
-    ADD CONSTRAINT animal_specie_pk PRIMARY KEY (id);
+ALTER TABLE ONLY public.animal_type
+    ADD CONSTRAINT animal_type_pk PRIMARY KEY (id);
+
+
+--
+-- Name: animal_treatment_medicine animal_treatment_medicine_pk; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.animal_treatment_medicine
+    ADD CONSTRAINT animal_treatment_medicine_pk PRIMARY KEY (animal_treatment_id);
+
+
+--
+-- Name: animal_treatment animal_treatment_pk; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.animal_treatment
+    ADD CONSTRAINT animal_treatment_pk PRIMARY KEY (id);
 
 
 --
@@ -807,6 +892,14 @@ ALTER TABLE ONLY public.medical_care_type
 
 ALTER TABLE ONLY public.medical_file
     ADD CONSTRAINT medical_file_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: medicine_type medicine_type_pk; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.medicine_type
+    ADD CONSTRAINT medicine_type_pk PRIMARY KEY (id);
 
 
 --
@@ -903,11 +996,11 @@ ALTER TABLE ONLY public.animal
 
 
 --
--- Name: animal animal_animal_specie_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: animal animal_animal_type_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.animal
-    ADD CONSTRAINT animal_animal_specie_fk FOREIGN KEY (specie_id) REFERENCES public.animal_specie(id);
+    ADD CONSTRAINT animal_animal_type_fk FOREIGN KEY (type_id) REFERENCES public.animal_type(id);
 
 
 --
@@ -943,11 +1036,43 @@ ALTER TABLE ONLY public.animal_injury
 
 
 --
--- Name: animal_race animal_race_animal_specie_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: animal_race animal_race_animal_type_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.animal_race
-    ADD CONSTRAINT animal_race_animal_specie_fk FOREIGN KEY (specie_id) REFERENCES public.animal_specie(id);
+    ADD CONSTRAINT animal_race_animal_type_fk FOREIGN KEY (type_id) REFERENCES public.animal_type(id);
+
+
+--
+-- Name: animal_treatment animal_treatment_animal_injury_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.animal_treatment
+    ADD CONSTRAINT animal_treatment_animal_injury_fk FOREIGN KEY (for_injury_id) REFERENCES public.animal_injury(id);
+
+
+--
+-- Name: animal_treatment animal_treatment_medical_file_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.animal_treatment
+    ADD CONSTRAINT animal_treatment_medical_file_fk FOREIGN KEY (medical_file_id) REFERENCES public.medical_file(id);
+
+
+--
+-- Name: animal_treatment_medicine animal_treatment_medicine_animal_treatment_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.animal_treatment_medicine
+    ADD CONSTRAINT animal_treatment_medicine_animal_treatment_fk FOREIGN KEY (animal_treatment_id) REFERENCES public.animal_treatment(id);
+
+
+--
+-- Name: animal_treatment_medicine animal_treatment_medicine_medicine_type_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.animal_treatment_medicine
+    ADD CONSTRAINT animal_treatment_medicine_medicine_type_fk FOREIGN KEY (medicine_type_id) REFERENCES public.medicine_type(id);
 
 
 --
@@ -1042,6 +1167,6 @@ ALTER TABLE ONLY public.visit
 -- PostgreSQL database dump complete
 --
 
-\unrestrict AwcLrdfgnmqOjWkEfzRGdeuTdZ6AL2OYyXNR2kpPzwETDrhQcKWmTAgmrThmLuh
+\unrestrict gjW31eTmlbKqsmClvFha42q8OFGG3NbR1OLIAKpcDmfs4ORnuvS0IvinSIowA78
 
 
